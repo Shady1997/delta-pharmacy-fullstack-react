@@ -1,0 +1,193 @@
+sequenceDiagram
+    participant C as 👤 Customer
+    participant UI as 🖥️ Frontend
+    participant API as 🔌 API Gateway
+    participant Auth as 🔐 Auth Service
+    participant Prod as 🏥 Product Service
+    participant Presc as 📋 Prescription Service
+    participant Order as 📦 Order Service
+    participant Pay as 💳 Payment Service
+    participant Notif as 📧 Notification Service
+    participant DB as 💾 Database
+
+    Note over C,DB: 1️⃣ USER REGISTRATION & LOGIN
+    C->>UI: Register Account
+    UI->>API: POST /api/auth/register
+    API->>Auth: Register User
+    Auth->>DB: Save User
+    DB-->>Auth: User Saved
+    Auth-->>API: JWT Token
+    API-->>UI: Auth Response
+    UI-->>C: Welcome! You're Registered
+
+    C->>UI: Login
+    UI->>API: POST /api/auth/login
+    API->>Auth: Validate Credentials
+    Auth->>DB: Query User
+    DB-->>Auth: User Details
+    Auth-->>API: JWT Token
+    API-->>UI: Token & User Info
+    UI-->>C: Login Success
+
+    Note over C,DB: 2️⃣ BROWSE & SEARCH PRODUCTS
+    C->>UI: Browse Medicines
+    UI->>API: GET /api/products
+    API->>Prod: Get All Products
+    Prod->>DB: Query Products
+    DB-->>Prod: Product List
+    Prod-->>API: Products with Stock
+    API-->>UI: Products JSON
+    UI-->>C: Display Products
+
+    C->>UI: Search "Paracetamol"
+    UI->>API: GET /api/search?query=paracetamol
+    API->>Prod: Search Products
+    Prod->>DB: Search Query
+    DB-->>Prod: Matching Products
+    Prod-->>API: Search Results
+    API-->>UI: Filtered Products
+    UI-->>C: Show Search Results
+
+    Note over C,DB: 3️⃣ PRESCRIPTION UPLOAD & APPROVAL
+    C->>UI: Select Rx Medicine
+    UI-->>C: Prescription Required!
+    C->>UI: Upload Prescription
+    UI->>API: POST /api/prescriptions/upload
+    API->>Presc: Save Prescription
+    Presc->>DB: Store Prescription
+    DB-->>Presc: Saved
+    Presc->>Notif: Create Notification
+    Notif->>DB: Save Notification
+    Notif-->>Presc: Notification Sent
+    Presc-->>API: Prescription Pending
+    API-->>UI: Upload Success
+    UI-->>C: Prescription Under Review
+
+    Note over C,DB: 4️⃣ PHARMACIST REVIEWS PRESCRIPTION
+    participant P as 💊 Pharmacist
+    P->>UI: Login as Pharmacist
+    P->>UI: View Pending Prescriptions
+    UI->>API: GET /api/prescriptions/pending
+    API->>Presc: Get Pending
+    Presc->>DB: Query Pending
+    DB-->>Presc: Pending List
+    Presc-->>API: Prescriptions
+    API-->>UI: Show List
+    UI-->>P: Display Prescriptions
+
+    P->>UI: Approve Prescription
+    UI->>API: PUT /api/prescriptions/{id}/approve
+    API->>Presc: Approve Prescription
+    Presc->>DB: Update Status
+    DB-->>Presc: Updated
+    Presc->>Notif: Notify Customer
+    Notif->>DB: Save Notification
+    Notif-->>C: 📧 Prescription Approved!
+    Presc-->>API: Approved
+    API-->>UI: Success
+    UI-->>P: Prescription Approved
+
+    Note over C,DB: 5️⃣ CREATE ORDER
+    C->>UI: Add to Cart
+    C->>UI: Proceed to Checkout
+    UI->>API: POST /api/orders
+    API->>Order: Create Order
+    Order->>DB: Check Stock
+    DB-->>Order: Stock Available
+    Order->>DB: Reduce Stock
+    Order->>DB: Save Order
+    DB-->>Order: Order Created
+    Order->>Notif: Order Notification
+    Notif-->>C: 📧 Order Created
+    Order-->>API: Order Details
+    API-->>UI: Order ID #123
+    UI-->>C: Order Created Successfully
+
+    Note over C,DB: 6️⃣ PAYMENT PROCESSING
+    C->>UI: Make Payment
+    UI->>API: POST /api/payments/initiate
+    API->>Pay: Initiate Payment
+    Pay->>DB: Create Payment Record
+    DB-->>Pay: Payment Pending
+    Pay-->>API: Transaction ID
+    API-->>UI: Payment Initiated
+    UI-->>C: Redirect to Payment
+
+    C->>UI: Complete Payment
+    UI->>API: POST /api/payments/verify
+    API->>Pay: Verify Payment
+    Pay->>Pay: Mock Gateway Check
+    Pay->>DB: Update Payment Status
+    DB-->>Pay: Payment Completed
+    Pay->>Order: Update Order Status
+    Order->>DB: Order Confirmed
+    Pay->>Notif: Payment Success
+    Notif-->>C: 📧 Payment Successful
+    Pay-->>API: Payment Verified
+    API-->>UI: Payment Success
+    UI-->>C: ✅ Order Confirmed!
+
+    Note over C,DB: 7️⃣ ORDER TRACKING & DELIVERY
+    C->>UI: Track Order
+    UI->>API: GET /api/orders/{userId}
+    API->>Order: Get User Orders
+    Order->>DB: Query Orders
+    DB-->>Order: Order List
+    Order-->>API: Orders with Status
+    API-->>UI: Order History
+    UI-->>C: Show Order Status
+
+    participant A as ⚙️ Admin
+    A->>UI: Login as Admin
+    A->>UI: Update Order Status
+    UI->>API: PUT /api/orders/{id}/status
+    API->>Order: Update Status
+    Order->>DB: Update Order
+    DB-->>Order: Updated
+    Order->>Notif: Status Change
+    Notif-->>C: 📧 Order Shipped!
+    Order-->>API: Status Updated
+    API-->>UI: Success
+    UI-->>A: Order Updated
+
+    Note over C,DB: 8️⃣ LEAVE REVIEW & SUPPORT
+    C->>UI: Leave Review
+    UI->>API: POST /api/reviews
+    API->>Prod: Save Review
+    Prod->>DB: Store Review
+    DB-->>Prod: Saved
+    Prod-->>API: Review Added
+    API-->>UI: Success
+    UI-->>C: Thank You!
+
+    C->>UI: Need Help?
+    UI->>API: POST /api/support/ticket
+    API->>Notif: Create Ticket
+    Notif->>DB: Save Ticket
+    DB-->>Notif: Ticket Created
+    Notif-->>API: Ticket #456
+    API-->>UI: Ticket Created
+    UI-->>C: We'll Contact You Soon
+
+    Note over C,DB: 9️⃣ ANALYTICS & REPORTS (ADMIN)
+    A->>UI: View Dashboard
+    UI->>API: GET /api/reports/sales
+    API->>Order: Generate Sales Report
+    Order->>DB: Aggregate Sales Data
+    DB-->>Order: Sales Stats
+    Order-->>API: Sales Report
+
+    UI->>API: GET /api/reports/inventory
+    API->>Prod: Generate Inventory Report
+    Prod->>DB: Query Stock Levels
+    DB-->>Prod: Inventory Stats
+    Prod-->>API: Inventory Report
+
+    UI->>API: GET /api/reports/users
+    API->>Auth: Generate Users Report
+    Auth->>DB: Query Users
+    DB-->>Auth: User Stats
+    Auth-->>API: Users Report
+
+    API-->>UI: All Reports
+    UI-->>A: Display Analytics Dashboard

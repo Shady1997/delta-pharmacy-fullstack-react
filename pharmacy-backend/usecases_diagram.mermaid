@@ -1,0 +1,209 @@
+graph LR
+subgraph Actors["👥 ACTORS"]
+Customer([👤 Customer])
+Pharmacist([💊 Pharmacist])
+Admin([⚙️ Admin])
+Guest([👁️ Guest])
+end
+
+subgraph Authentication["🔐 AUTHENTICATION & PROFILE"]
+UC1[Register Account]
+UC2[Login]
+UC3[Logout]
+UC4[View Profile]
+UC5[Update Profile]
+UC6[Change Password]
+end
+
+subgraph ProductManagement["🏥 PRODUCT MANAGEMENT"]
+UC7[Browse Products]
+UC8[Search Products]
+UC9[View Product Details]
+UC10[Filter by Category]
+UC11[Add Product]
+UC12[Update Product]
+UC13[Delete Product]
+UC14[View Reviews]
+end
+
+subgraph InventoryManagement["📦 INVENTORY MANAGEMENT"]
+UC15[View Stock Levels]
+UC16[Update Stock]
+UC17[Low Stock Alerts]
+UC18[Inventory Report]
+end
+
+subgraph PrescriptionManagement["📋 PRESCRIPTION MANAGEMENT"]
+UC19[Upload Prescription]
+UC20[View My Prescriptions]
+UC21[View Pending Prescriptions]
+UC22[Approve Prescription]
+UC23[Reject Prescription]
+UC24[Check Prescription Status]
+end
+
+subgraph OrderManagement["🛒 ORDER MANAGEMENT"]
+UC25[Add to Cart]
+UC26[Create Order]
+UC27[View My Orders]
+UC28[Track Order]
+UC29[Cancel Order]
+UC30[View All Orders]
+UC31[Update Order Status]
+end
+
+subgraph PaymentManagement["💳 PAYMENT MANAGEMENT"]
+UC32[Initiate Payment]
+UC33[Complete Payment]
+UC34[Verify Payment]
+UC35[View Payment History]
+UC36[Payment Failed Retry]
+end
+
+subgraph NotificationSystem["📧 NOTIFICATION SYSTEM"]
+UC37[View Notifications]
+UC38[Mark as Read]
+UC39[Order Notifications]
+UC40[Prescription Notifications]
+UC41[Payment Notifications]
+end
+
+subgraph ReviewSystem["⭐ REVIEW & RATING"]
+UC42[Leave Review]
+UC43[Rate Product]
+UC44[View Product Reviews]
+UC45[Calculate Average Rating]
+end
+
+subgraph SupportSystem["💬 CUSTOMER SUPPORT"]
+UC46[Create Support Ticket]
+UC47[View My Tickets]
+UC48[Chat with Pharmacist]
+UC49[View All Tickets]
+UC50[Respond to Ticket]
+UC51[Close Ticket]
+end
+
+subgraph AnalyticsReporting["📊 ANALYTICS & REPORTING"]
+UC52[Sales Report]
+UC53[Revenue Analysis]
+UC54[Inventory Report]
+UC55[Users Report]
+UC56[Order Statistics]
+UC57[Product Performance]
+end
+
+subgraph UserManagement["👥 USER MANAGEMENT"]
+UC58[View All Users]
+UC59[Assign Roles]
+UC60[Deactivate User]
+UC61[User Activity Log]
+end
+
+%% Guest Interactions
+Guest --> UC7
+Guest --> UC8
+Guest --> UC9
+Guest --> UC10
+Guest --> UC14
+Guest --> UC44
+Guest --> UC1
+Guest --> UC2
+
+%% Customer Interactions
+Customer --> UC2
+Customer --> UC3
+Customer --> UC4
+Customer --> UC5
+Customer --> UC6
+Customer --> UC7
+Customer --> UC8
+Customer --> UC9
+Customer --> UC10
+Customer --> UC14
+Customer --> UC19
+Customer --> UC20
+Customer --> UC24
+Customer --> UC25
+Customer --> UC26
+Customer --> UC27
+Customer --> UC28
+Customer --> UC29
+Customer --> UC32
+Customer --> UC33
+Customer --> UC35
+Customer --> UC36
+Customer --> UC37
+Customer --> UC38
+Customer --> UC42
+Customer --> UC43
+Customer --> UC46
+Customer --> UC47
+Customer --> UC48
+
+%% Pharmacist Interactions
+Pharmacist --> UC2
+Pharmacist --> UC3
+Pharmacist --> UC4
+Pharmacist --> UC5
+Pharmacist --> UC7
+Pharmacist --> UC8
+Pharmacist --> UC9
+Pharmacist --> UC15
+Pharmacist --> UC21
+Pharmacist --> UC22
+Pharmacist --> UC23
+Pharmacist --> UC30
+Pharmacist --> UC31
+Pharmacist --> UC49
+Pharmacist --> UC50
+Pharmacist --> UC51
+Pharmacist --> UC52
+Pharmacist --> UC53
+Pharmacist --> UC54
+
+%% Admin Interactions
+Admin --> UC2
+Admin --> UC3
+Admin --> UC4
+Admin --> UC5
+Admin --> UC7
+Admin --> UC8
+Admin --> UC9
+Admin --> UC10
+Admin --> UC11
+Admin --> UC12
+Admin --> UC13
+Admin --> UC14
+Admin --> UC15
+Admin --> UC16
+Admin --> UC17
+Admin --> UC18
+Admin --> UC21
+Admin --> UC22
+Admin --> UC23
+Admin --> UC30
+Admin --> UC31
+Admin --> UC49
+Admin --> UC50
+Admin --> UC51
+Admin --> UC52
+Admin --> UC53
+Admin --> UC54
+Admin --> UC55
+Admin --> UC56
+Admin --> UC57
+Admin --> UC58
+Admin --> UC59
+Admin --> UC60
+Admin --> UC61
+
+%% Styling
+classDef actor fill:#FFE082,stroke:#F57C00,stroke-width:3px
+classDef usecase fill:#B3E5FC,stroke:#0277BD,stroke-width:2px
+classDef critical fill:#FFCDD2,stroke:#C62828,stroke-width:2px
+classDef admin fill:#D1C4E9,stroke:#512DA8,stroke-width:2px
+
+class Customer,Pharmacist,Admin,Guest actor
+class UC1,UC2,UC26,UC32,UC22,UC31 critical
+class UC11,UC12,UC13,UC16,UC59,UC60 admin

@@ -1,0 +1,127 @@
+graph TD
+    Start([🏁 Start]) --> UserReg[👤 User Registration]
+
+    UserReg --> Login[🔐 Login & Get JWT Token]
+    Login --> Dashboard{User Role?}
+
+    Dashboard -->|Customer| CustomerFlow[👨‍💼 Customer Dashboard]
+    Dashboard -->|Pharmacist| PharmacistFlow[💊 Pharmacist Dashboard]
+    Dashboard -->|Admin| AdminFlow[⚙️ Admin Dashboard]
+
+    %% Customer Flow
+    CustomerFlow --> BrowseProducts[🔍 Browse Products]
+    BrowseProducts --> SearchFilter[🔎 Search & Filter Medicines]
+    SearchFilter --> ViewProduct[📋 View Product Details]
+    ViewProduct --> CheckReview[⭐ Check Reviews & Ratings]
+
+    CheckReview --> PrescCheck{Prescription<br/>Required?}
+    PrescCheck -->|Yes| UploadPresc[📤 Upload Prescription]
+    PrescCheck -->|No| AddCart[🛒 Add to Cart]
+
+    UploadPresc --> WaitApproval[⏳ Wait for Approval]
+    WaitApproval --> CheckStatus[📱 Check Notification]
+    CheckStatus --> PrescApproved{Approved?}
+
+    PrescApproved -->|Yes| AddCart
+    PrescApproved -->|No| ContactSupport[💬 Contact Support]
+
+    AddCart --> CreateOrder[📦 Create Order]
+    CreateOrder --> StockCheck{Stock<br/>Available?}
+
+    StockCheck -->|No| OutOfStock[❌ Out of Stock Notification]
+    StockCheck -->|Yes| InitPayment[💳 Initiate Payment]
+
+    InitPayment --> PaymentGateway[🏦 Payment Gateway Mock]
+    PaymentGateway --> VerifyPayment[✅ Verify Payment]
+    VerifyPayment --> PaymentSuccess{Payment<br/>Success?}
+
+    PaymentSuccess -->|No| PaymentFailed[❌ Payment Failed]
+    PaymentFailed --> RetryPayment{Retry?}
+    RetryPayment -->|Yes| InitPayment
+    RetryPayment -->|No| CancelOrder[🚫 Cancel Order]
+
+    PaymentSuccess -->|Yes| OrderConfirmed[✅ Order Confirmed]
+    OrderConfirmed --> UpdateStock[📊 Update Inventory]
+    UpdateStock --> OrderNotif[📧 Order Confirmation Email]
+
+    OrderNotif --> TrackOrder[📍 Track Order Status]
+    TrackOrder --> OrderStatus{Order Status}
+
+    OrderStatus -->|Processing| WaitShip[⏳ Wait for Shipment]
+    OrderStatus -->|Shipped| InTransit[🚚 In Transit]
+    OrderStatus -->|Delivered| OrderComplete[✅ Order Delivered]
+
+    OrderComplete --> LeaveReview[⭐ Leave Review & Rating]
+    LeaveReview --> ViewHistory[📜 View Order History]
+
+    ContactSupport --> CreateTicket[🎫 Create Support Ticket]
+    CreateTicket --> ChatBot[🤖 Chat with Pharmacist]
+    ChatBot --> TicketResolved[✅ Issue Resolved]
+
+    %% Pharmacist Flow
+    PharmacistFlow --> ViewPrescriptions[📋 View Pending Prescriptions]
+    ViewPrescriptions --> ReviewPresc[🔍 Review Prescription]
+    ReviewPresc --> ValidatePresc{Valid<br/>Prescription?}
+
+    ValidatePresc -->|Yes| ApprovePresc[✅ Approve Prescription]
+    ValidatePresc -->|No| RejectPresc[❌ Reject with Reason]
+
+    ApprovePresc --> NotifyCustomer1[📧 Notify Customer]
+    RejectPresc --> NotifyCustomer1
+
+    NotifyCustomer1 --> ViewOrders[📦 View All Orders]
+    ViewOrders --> UpdateOrderStatus[📝 Update Order Status]
+    UpdateOrderStatus --> ViewTickets[🎫 View Support Tickets]
+    ViewTickets --> RespondTicket[💬 Respond to Tickets]
+    RespondTicket --> ViewReports1[📊 View Reports]
+
+    %% Admin Flow
+    AdminFlow --> ManageProducts[🏥 Manage Products]
+    ManageProducts --> AddProduct[➕ Add New Product]
+    ManageProducts --> UpdateProduct[✏️ Update Product]
+    ManageProducts --> DeleteProduct[🗑️ Delete Product]
+
+    AddProduct --> ManageInventory[📦 Manage Inventory]
+    UpdateProduct --> ManageInventory
+    DeleteProduct --> ManageInventory
+
+    ManageInventory --> CheckStockLevels[📊 Check Stock Levels]
+    CheckStockLevels --> LowStock{Low Stock<br/>Alert?}
+
+    LowStock -->|Yes| ReorderAlert[🔔 Reorder Alert]
+    LowStock -->|No| UpdateStockQty[➕➖ Update Stock Quantity]
+
+    ReorderAlert --> UpdateStockQty
+    UpdateStockQty --> ViewAllOrders[📦 View All Orders]
+
+    ViewAllOrders --> ManageOrderStatus[📝 Manage Order Statuses]
+    ManageOrderStatus --> ViewPayments[💰 View Payment History]
+    ViewPayments --> ViewAnalytics[📈 View Analytics & Reports]
+
+    ViewAnalytics --> SalesReport[💵 Sales Report]
+    ViewAnalytics --> InventoryReport[📦 Inventory Report]
+    ViewAnalytics --> UsersReport[👥 Users Report]
+
+    SalesReport --> ManageUsers[👤 Manage Users]
+    InventoryReport --> ManageUsers
+    UsersReport --> ManageUsers
+
+    ManageUsers --> AssignRoles[🎭 Assign Roles]
+    AssignRoles --> ViewReports1
+
+    ViewReports1 --> End([🏁 End])
+    ViewHistory --> End
+    TicketResolved --> End
+    CancelOrder --> End
+    OutOfStock --> End
+
+    style Start fill:#4CAF50,stroke:#333,stroke-width:4px,color:#fff
+    style End fill:#F44336,stroke:#333,stroke-width:4px,color:#fff
+    style Login fill:#2196F3,stroke:#333,stroke-width:2px,color:#fff
+    style OrderConfirmed fill:#4CAF50,stroke:#333,stroke-width:2px,color:#fff
+    style PaymentFailed fill:#F44336,stroke:#333,stroke-width:2px,color:#fff
+    style ApprovePresc fill:#4CAF50,stroke:#333,stroke-width:2px,color:#fff
+    style RejectPresc fill:#F44336,stroke:#333,stroke-width:2px,color:#fff
+    style CustomerFlow fill:#E3F2FD,stroke:#2196F3,stroke-width:2px
+    style PharmacistFlow fill:#F3E5F5,stroke:#9C27B0,stroke-width:2px
+    style AdminFlow fill:#FFF3E0,stroke:#FF9800,stroke-width:2px

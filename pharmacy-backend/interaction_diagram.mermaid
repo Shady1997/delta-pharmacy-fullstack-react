@@ -1,0 +1,157 @@
+graph TB
+    subgraph Frontend["🖥️ FRONTEND APPLICATION"]
+        WebApp[Web Application]
+        MobileApp[Mobile App]
+    end
+
+    subgraph APIGateway["🔌 API GATEWAY"]
+        RestAPI[REST API Endpoints]
+        Swagger[Swagger Documentation]
+    end
+
+    subgraph Security["🔐 SECURITY LAYER"]
+        JWT[JWT Token Provider]
+        AuthFilter[Authentication Filter]
+        UserDetails[User Details Service]
+    end
+
+    subgraph Controllers["🎮 CONTROLLERS LAYER"]
+        AuthCtrl[Auth Controller]
+        ProdCtrl[Product Controller]
+        PrescCtrl[Prescription Controller]
+        OrderCtrl[Order Controller]
+        PayCtrl[Payment Controller]
+        NotifCtrl[Notification Controller]
+        ReviewCtrl[Review Controller]
+        SupportCtrl[Support Controller]
+        AnalyticsCtrl[Analytics Controller]
+    end
+
+    subgraph Services["⚙️ BUSINESS LOGIC LAYER"]
+        AuthSvc[Auth Service]
+        ProdSvc[Product Service]
+        PrescSvc[Prescription Service]
+        OrderSvc[Order Service]
+        PaySvc[Payment Service]
+        NotifSvc[Notification Service]
+        ReviewSvc[Review Service]
+        SupportSvc[Support Service]
+        AnalyticsSvc[Analytics Service]
+    end
+
+    subgraph Repositories["💾 DATA ACCESS LAYER"]
+        UserRepo[(User Repository)]
+        ProdRepo[(Product Repository)]
+        PrescRepo[(Prescription Repository)]
+        OrderRepo[(Order Repository)]
+        PayRepo[(Payment Repository)]
+        NotifRepo[(Notification Repository)]
+        ReviewRepo[(Review Repository)]
+        TicketRepo[(Support Ticket Repository)]
+    end
+
+    subgraph Database["🗄️ DATABASE"]
+        H2DB[(H2 In-Memory Database)]
+    end
+
+    subgraph ExternalMock["🔌 MOCK INTEGRATIONS"]
+        PaymentGW[Payment Gateway Mock]
+        EmailSvc[Email Service Mock]
+        SMSSvc[SMS Service Mock]
+        PushNotif[Push Notification Mock]
+        FileStorage[File Storage Mock]
+    end
+
+%% Frontend to API
+    WebApp --> RestAPI
+    MobileApp --> RestAPI
+
+%% API to Security
+    RestAPI --> AuthFilter
+    AuthFilter --> JWT
+    AuthFilter --> UserDetails
+
+%% Security to Controllers
+    JWT --> AuthCtrl
+    AuthFilter --> ProdCtrl
+    AuthFilter --> PrescCtrl
+    AuthFilter --> OrderCtrl
+    AuthFilter --> PayCtrl
+    AuthFilter --> NotifCtrl
+    AuthFilter --> ReviewCtrl
+    AuthFilter --> SupportCtrl
+    AuthFilter --> AnalyticsCtrl
+
+%% Controllers to Services
+    AuthCtrl --> AuthSvc
+    ProdCtrl --> ProdSvc
+    PrescCtrl --> PrescSvc
+    OrderCtrl --> OrderSvc
+    PayCtrl --> PaySvc
+    NotifCtrl --> NotifSvc
+    ReviewCtrl --> ReviewSvc
+    SupportCtrl --> SupportSvc
+    AnalyticsCtrl --> AnalyticsSvc
+
+%% Services to Services (Cross-Module Communication)
+    PrescSvc -.->|Notify User| NotifSvc
+    OrderSvc -.->|Check Stock| ProdSvc
+    OrderSvc -.->|Validate Prescription| PrescSvc
+    OrderSvc -.->|Notify User| NotifSvc
+    PaySvc -.->|Update Order| OrderSvc
+    PaySvc -.->|Notify User| NotifSvc
+    AuthSvc -.->|Get User| UserRepo
+
+%% Services to Repositories
+    AuthSvc --> UserRepo
+    ProdSvc --> ProdRepo
+    PrescSvc --> PrescRepo
+    PrescSvc --> UserRepo
+    OrderSvc --> OrderRepo
+    OrderSvc --> ProdRepo
+    PaySvc --> PayRepo
+    PaySvc --> OrderRepo
+    NotifSvc --> NotifRepo
+    ReviewSvc --> ReviewRepo
+    ReviewSvc --> ProdRepo
+    SupportSvc --> TicketRepo
+    AnalyticsSvc --> OrderRepo
+    AnalyticsSvc --> ProdRepo
+    AnalyticsSvc --> UserRepo
+
+%% Repositories to Database
+    UserRepo --> H2DB
+    ProdRepo --> H2DB
+    PrescRepo --> H2DB
+    OrderRepo --> H2DB
+    PayRepo --> H2DB
+    NotifRepo --> H2DB
+    ReviewRepo --> H2DB
+    TicketRepo --> H2DB
+
+%% Services to Mock External Services
+    PaySvc -.->|Process Payment| PaymentGW
+    NotifSvc -.->|Send Email| EmailSvc
+    NotifSvc -.->|Send SMS| SMSSvc
+    NotifSvc -.->|Push Notification| PushNotif
+    PrescSvc -.->|Store File| FileStorage
+
+%% Swagger
+    RestAPI --> Swagger
+
+%% Styling
+    classDef frontend fill:#E3F2FD,stroke:#2196F3,stroke-width:2px
+    classDef security fill:#FFF3E0,stroke:#FF9800,stroke-width:2px
+    classDef controller fill:#F3E5F5,stroke:#9C27B0,stroke-width:2px
+    classDef service fill:#E8F5E9,stroke:#4CAF50,stroke-width:2px
+    classDef repository fill:#FCE4EC,stroke:#E91E63,stroke-width:2px
+    classDef database fill:#FFEBEE,stroke:#F44336,stroke-width:3px
+    classDef mock fill:#FFF9C4,stroke:#FBC02D,stroke-width:2px
+
+    class WebApp,MobileApp frontend
+    class JWT,AuthFilter,UserDetails security
+    class AuthCtrl,ProdCtrl,PrescCtrl,OrderCtrl,PayCtrl,NotifCtrl,ReviewCtrl,SupportCtrl,AnalyticsCtrl controller
+    class AuthSvc,ProdSvc,PrescSvc,OrderSvc,PaySvc,NotifSvc,ReviewSvc,SupportSvc,AnalyticsSvc service
+    class UserRepo,ProdRepo,PrescRepo,OrderRepo,PayRepo,NotifRepo,ReviewRepo,TicketRepo repository
+    class H2DB database
+    class PaymentGW,EmailSvc,SMSSvc,PushNotif,FileStorage mock
